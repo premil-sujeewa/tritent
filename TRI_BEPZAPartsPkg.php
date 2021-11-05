@@ -449,8 +449,8 @@ $terms=$row1['Term_name'];
           <tr>
           <td><span class="style5">SR No</span></td>
             <td colspan="2"><strong>Part Name(HS CODE)              </strong></td>
-            <td colspan="6">
-              <div align="center"><strong>Sc#              </strong></div></td>
+            <!--td colspan="6">
+              <div align="center"><strong>Sc#              </strong></div></td-->
             <td width="88"><div align="center" class="style6"><strong>TTL Qty</strong></div></td>
             
             <td width="73"> <div align="center" class="style6"><strong>Unit</strong></div></td>
@@ -464,7 +464,7 @@ $terms=$row1['Term_name'];
             </tr>
             
 		            <tr>
-            <td colspan="14" valign="top"><hr /></td>
+            <td colspan="8" valign="top"><hr /></td>
             </tr>
 
           <!--tr>
@@ -487,6 +487,94 @@ ORDER BY
 `Ibws_Data_shp_qty`.`Group_ID`,`Ibws_Data_shp_qty`.`Auto_No`,`Parts`.`Part_ID`,`Ibws_Data_shp_qty`.`Sc_No`,`Ibws_Data_shp_qty`.`Seq_No` ASC 
 ");
 */
+
+$resulet1199 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NW, sum(Gw*Noofpkg) AS TTL_GW from Ibws_Data_shp_qty_pk_pc3 WHERE Inv_No='$invpass'" ) or die(mysql_error());  
+		   $rowe1199 = mysql_fetch_array( $resulet1199 );
+		   $ttlnwt=$rowe1199['TTL_NW'];
+		   $ttlgwt=$rowe1199['TTL_GW'];
+
+		   $resulet1199 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NW, sum(Gw*Noofpkg) AS TTL_GW from Ibws_Data_shp_pc3_sp_pk WHERE Inv_No='$invpass'" ) or die(mysql_error());  
+		   $rowe1199 = mysql_fetch_array( $resulet1199 );
+		   $ttlnwt=$ttlnwt+$rowe1199['TTL_NW'];
+		   $ttlgwt=$ttlgwt+$rowe1199['TTL_GW'];
+
+		   $result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE (PackageID='' OR PackageID IS NULL) and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnwy=round($row11992['TTL_NWS'],2);
+			   	$ttlgwy=round($row11992['TTL_GWS'],2);
+
+			   	$result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE (PackageID='' OR PackageID IS NULL) and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnwy=$ttlnwy+round($row11992['TTL_NWS'],2);
+			   	$ttlgwy=$ttlgwy+round($row11992['TTL_GWS'],2);
+
+			   	$result11991 = mysql_query("select Part_ID,sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtyt, PackageID,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE Inv_No='$invpass' AND PackageID!='' AND PackageID IS NOT NULL GROUP BY PackageID,Part_ID") or die(mysql_error());  
+			   while($row11991 = mysql_fetch_array( $result11991)){
+			   	$shippedqtyt=$row11991['shippedqtyt'];
+			   	$PackageID=$row11991['PackageID'];
+			   	$Part_ID=$row11991['Part_ID'];
+			   	$ttlnws=$row11991['TTL_NWS'];
+			   	$ttlgws=$row11991['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE Part_ID!='$Part_ID' AND PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnws=$ttlnws+$row11992['TTL_NWS'];
+			   	$ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnws=$ttlnws+$row11992['TTL_NWS'];
+			   	$ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys from Ibws_Data_shp_qty_pk_pc3 WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$row11992['shippedqtys'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$shippedqtys+$row11992['shippedqtys'];
+
+			   	$nwper=round(($ttlnws/$shippedqtys)*$shippedqtyt,2);
+			   	$gwper=round(($ttlgws/$shippedqtys)*$shippedqtyt,2);
+			   	$ttlnwy=$ttlnwy+$nwper;
+			   	$ttlgwy=$ttlgwy+$gwper;
+			   }
+
+			   $result11991 = mysql_query("select Part_ID,sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS sumqtyt,PackageID,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE Inv_No='$invpass' AND PackageID!='' AND PackageID IS NOT NULL GROUP BY PackageID,Part_ID") or die(mysql_error());
+         while($row11991 = mysql_fetch_array( $result11991)){
+          $sumqtyt=$row11991['sumqtyt'];
+          $PackageID=$row11991['PackageID'];
+          $Part_ID=$row11991['Part_ID'];
+          $ttlnws=$row11991['TTL_NWS'];
+          $ttlgws=$row11991['TTL_GWS'];
+
+          $result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE Part_ID!='$Part_ID' AND PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+          $row11992 = mysql_fetch_array( $result11992);
+          $ttlnws=$ttlnws+$row11992['TTL_NWS'];
+          $ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+          $result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+          $row11992 = mysql_fetch_array( $result11992);
+          $ttlnws=$ttlnws+$row11992['TTL_NWS'];
+          $ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+          $result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS sumqtys from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+          $row11992 = mysql_fetch_array( $result11992);
+          $sumqtys=$row11992['sumqtys'];
+
+          $result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS sumqtys from Ibws_Data_shp_qty_pk_pc3 WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+          $row11992 = mysql_fetch_array( $result11992);
+          $sumqtys=$sumqtys+$row11992['sumqtys'];
+
+          $nwper=round(($ttlnws/$sumqtys)*$sumqtyt,2);
+          $gwper=round(($ttlgws/$sumqtys)*$sumqtyt,2);
+          $ttlnwy=$ttlnwy+$nwper;
+          $ttlgwy=$ttlgwy+$gwper;
+         }
+         $rnw=$ttlnwt-$ttlnwy;
+         $rgw=$ttlgwt-$ttlgwy;
+         $snw=0; $sgw=0;
+
 $result = mysql_query("SELECT `TRI_Ref_Bepza_Partsinv`.* 
 
 FROM
@@ -529,8 +617,77 @@ ORDER BY
 		   $result1199 = mysql_query("SELECT * FROM TRI_TTL_NW_GW Where Part_ID='$Part_ID' and Inv_No='$invpass' " ) or die(mysql_error());  
 		   $row1199 = mysql_fetch_array( $result1199 );
 		   $ttlpkgs=$row1199['Noofpkg'];
-		   $ttlnw=$row1199['TTL_NW'];
-		   $ttlgw=$row1199['TTL_GW'];
+		   /*$ttlnw=$row1199['TTL_NW'];
+		   $ttlgw=$row1199['TTL_GW'];*/
+
+		   $result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE Part_ID='$Part_ID' AND (PackageID='' OR PackageID IS NULL) and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnw=round($row11992['TTL_NWS'],2);
+			   	$ttlgw=round($row11992['TTL_GWS'],2);
+
+		   /*$result11991 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtyt, PackageID,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE Part_ID='$Part_ID' and Inv_No='$invpass' AND PackageID!='' AND PackageID IS NOT NULL AND Nw>'0' AND Nw!='' AND Nw IS NOT NULL AND Gw>'0' AND Gw!='' AND Gw IS NOT NULL GROUP BY PackageID") or die(mysql_error());*/
+		   $result11991 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtyt, PackageID,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE Part_ID='$Part_ID' and Inv_No='$invpass' AND PackageID!='' AND PackageID IS NOT NULL GROUP BY PackageID") or die(mysql_error());  
+			   while($row11991 = mysql_fetch_array( $result11991)){
+			   	$shippedqtyt=$row11991['shippedqtyt'];
+			   	$PackageID=$row11991['PackageID'];
+			   	$ttlnws=$row11991['TTL_NWS'];
+			   	$ttlgws=$row11991['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE  Part_ID!='$Part_ID' AND PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnws=$ttlnws+$row11992['TTL_NWS'];
+			   	$ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$ttlnws=$ttlnws+$row11992['TTL_NWS'];
+			   	$ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys from Ibws_Data_shp_qty_pk_pc3 WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$row11992['shippedqtys'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$shippedqtys+$row11992['shippedqtys'];
+
+			   	$nwper=round(($ttlnws/$shippedqtys)*$shippedqtyt,2);
+			   	$gwper=round(($ttlgws/$shippedqtys)*$shippedqtyt,2);
+          $ttlnw=$ttlnw+$nwper;
+          $ttlgw=$ttlgw+$gwper;
+			   }
+
+			   if($snw==0 && ($ttlnw+$rnw)>0){
+			   	$ttlnw=$ttlnw+$rnw;
+			   	$snw=1;
+			   }
+			   if($sgw==0 && ($ttlgw+$rgw)>0){
+			   	$ttlgw=$ttlgw+$rgw;
+			   	$sgw=1;
+			   }
+
+		 		 /*$result11991 = mysql_query("select PackageID,sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtyt from Ibws_Data_shp_qty_pk_pc3 WHERE Part_ID='$Part_ID' and Inv_No='$invpass' AND PackageID!='' AND PackageID IS NOT NULL AND (Nw='0' OR Nw='' OR Nw IS NULL) GROUP BY PackageID") or die(mysql_error());  
+			   while($row11991 = mysql_fetch_array( $result11991)){
+			   	$PackageID=$row11991['PackageID'];
+			   	$shippedqtyt=$row11991['shippedqtyt'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_qty_pk_pc3 WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$row11992['shippedqtys'];
+			   	$ttlnws=$row11992['TTL_NWS'];
+			   	$ttlgws=$row11992['TTL_GWS'];
+
+			   	$result11992 = mysql_query("select sum(if(Noofpkg>'0',PerPkg*Noofpkg,PerPkg)) AS shippedqtys,sum(Nw*Noofpkg) AS TTL_NWS, sum(Gw*Noofpkg) AS TTL_GWS from Ibws_Data_shp_pc3_sp_pk WHERE PackageID='$PackageID' and Inv_No='$invpass'") or die(mysql_error());  
+			   	$row11992 = mysql_fetch_array( $result11992);
+			   	$shippedqtys=$shippedqtys+$row11992['shippedqtys'];
+			   	$ttlnws=$ttlnws+$row11992['TTL_NWS'];
+			   	$ttlgws=$ttlgws+$row11992['TTL_GWS'];
+
+			   	$nwper=round(($ttlnws/$shippedqtys)*$shippedqtyt,2);
+			   	$gwper=round(($ttlgws/$shippedqtys)*$shippedqtyt,2);
+			   	$ttlnw=$ttlnw+$nwper;
+			   	$ttlgw=$ttlgw+$gwper;
+			   }*/
 		   
 		   $fttlpkgs=$fttlpkgs+$ttlpkgs;
 		   $fttlnw=$fttlnw+round($ttlnw,2);
@@ -702,7 +859,7 @@ WHERE
 	?>
               <tr>
               <td align="center"><?php print $x ?></td>
-            <td colspan="4" valign="top" class="style6"><u><strong><i><?php print $partname ?> (<?php print $hscode ?>)</i></strong>
+            <td colspan="2" valign="top" class="style6"><u><strong><i><?php print $partname ?> (<?php print $hscode ?>)</i></strong>
               <?php
 			  
 			$result1 = mysql_query("SELECT Size ,Seq_No FROM PC_Item Where SC_No=".$record['Sc_No']." AND PC_No=1 AND Seq_No=".$record['Seq_No']."" ) or die(mysql_error());  
@@ -757,9 +914,9 @@ Ibws_Data_shp_qty.Sc_No=".$InvPcList['Sc_No']." AND Ibws_Data_shp_qty.Pc_No='1' 
 			    */
 			  ?>
             </u></td>
-            <td colspan="4" valign="top" class="style6"><div align="center">
+            <!--td colspan="4" valign="top" class="style6"><div align="center"-->
               <?
-			$Cntr="";
+			/*$Cntr="";
             $result1 = mysql_query("SELECT * FROM TRI_Ref_Bepza_Partinvscwise Where Inv_No='".$record['Inv_No']."' AND Item='$partname'  " ) or die(mysql_error());  
 			//echo "SELECT * FROM Ref_Bepza_Partinvscwise Where Inv_No='".$record['Inv_No']."' AND Item='$partname' ";
 			// store the record of the "example" table into $row
@@ -770,12 +927,12 @@ Ibws_Data_shp_qty.Sc_No=".$InvPcList['Sc_No']." AND Ibws_Data_shp_qty.Pc_No='1' 
 			
 			}
             
-            echo $Cntr;
+            echo $Cntr;*/
 			
 			$unitprice=$Sub_Total/$shippedqty;
             ?>
-            </div>              
-            <div align="center"></div></td>
+            <!--/div>              
+            <div align="center"></div></td-->
             <td width="88"><div align="center"><strong><i><?php print $shippedqty ?></i></strong></div></td>
             <td><div align="center"><?php print $unitt ?></div></td>
             
@@ -803,7 +960,7 @@ Ibws_Data_shp_qty.Sc_No=".$InvPcList['Sc_No']." AND Ibws_Data_shp_qty.Pc_No='1' 
 
 
           <tr>
-            <td colspan="14"><hr /></td>
+            <td colspan="8"><hr /></td>
             </tr>
             
 			
@@ -818,7 +975,7 @@ Ibws_Data_shp_qty.Sc_No=".$InvPcList['Sc_No']." AND Ibws_Data_shp_qty.Pc_No='1' 
 		  
 		  
 		  ?>
-            <td colspan="11">&nbsp; &nbsp; &nbsp; <?php 
+            <td colspan="5">&nbsp; &nbsp; &nbsp; <?php 
 			
 
 				/*
